@@ -1,14 +1,22 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useAuth } from "@/hooks/useAuth";
+import AuthPage from "@/components/AuthPage";
+import Dashboard from "@/components/Dashboard";
 
 const Index = () => {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
-  );
+  const { user, login, register, logout, loading, error } = useAuth();
+
+  if (!user) {
+    return (
+      <AuthPage
+        onLogin={login}
+        onRegister={register}
+        loading={loading}
+        error={error}
+      />
+    );
+  }
+
+  return <Dashboard username={user.username} onLogout={logout} />;
 };
 
 export default Index;

@@ -24,9 +24,18 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
     setResult(null);
     setSelectedId(null);
 
+    // Create preview URL for the file
+    const previewUrl = URL.createObjectURL(file);
+    const mediaType = file.type.startsWith("video") ? "video" : "image";
+
     try {
       const res = await analyzeMedia(file, username);
-      setResult(res);
+      // Add media URL and type to result
+      setResult({
+        ...res,
+        mediaUrl: previewUrl,
+        mediaType: mediaType,
+      });
 
       const newItem: HistoryItem = {
         id: Date.now(),
@@ -35,12 +44,14 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
         prediction: res.label,
         confidence: res.confidence,
         timestamp: new Date().toISOString(),
-        fileType: file.type.startsWith("video") ? "video" : "image",
-        previewUrl: URL.createObjectURL(file),
+        fileType: mediaType,
+        previewUrl: previewUrl,
       };
       setHistory((prev) => [newItem, ...prev]);
     } catch (err) {
       console.error("Analysis failed:", err);
+      // Revoke URL on error
+      URL.revokeObjectURL(previewUrl);
     } finally {
       setIsAnalyzing(false);
     }
@@ -53,25 +64,47 @@ export default function Dashboard({ username, onLogout }: DashboardProps) {
       setResult({
         label: item.prediction,
         confidence: item.confidence,
+        mediaUrl: item.previewUrl,
+        mediaType: item.fileType,
       });
     }
   };
 
   const handleDeleteItem = (id: number) => {
+    const item = history.find((h) => h.id === id);
+    if (item?.previewUrl) {
+      URL.revokeObjectURL(item.previewUrl);
+    }
     setHistory((prev) => prev.filter((h) => h.id !== id));
     if (selectedId === id) {
+      if (result?.mediaUrl) {
+        URL.revokeObjectURL(result.mediaUrl);
+      }
       setSelectedId(null);
       setResult(null);
     }
   };
 
   const handleDeleteAll = () => {
+    // Clean up all preview URLs
+    history.forEach((item) => {
+      if (item.previewUrl) {
+        URL.revokeObjectURL(item.previewUrl);
+      }
+    });
+    if (result?.mediaUrl) {
+      URL.revokeObjectURL(result.mediaUrl);
+    }
     setHistory([]);
     setSelectedId(null);
     setResult(null);
   };
 
   const handleNewAnalysis = () => {
+    // Clean up media URL if it exists
+    if (result?.mediaUrl) {
+      URL.revokeObjectURL(result.mediaUrl);
+    }
     setResult(null);
     setSelectedId(null);
   };

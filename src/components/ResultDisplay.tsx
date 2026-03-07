@@ -49,6 +49,30 @@ export default function ResultDisplay({ result }: ResultDisplayProps) {
       transition={{ duration: 0.5 }}
       className="space-y-4"
     >
+      {/* Media preview */}
+      {result.mediaUrl && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1 }}
+          className="rounded-xl overflow-hidden border border-border bg-muted/20"
+        >
+          {result.mediaType === "video" ? (
+            <video 
+              src={result.mediaUrl} 
+              controls 
+              className="w-full max-h-96 object-contain"
+            />
+          ) : (
+            <img 
+              src={result.mediaUrl} 
+              alt="Analyzed media" 
+              className="w-full max-h-96 object-contain"
+            />
+          )}
+        </motion.div>
+      )}
+
       {/* Main result card */}
       <div className={`glass-card p-6 border ${c.bgClass} ${c.glowClass}`}>
         <div className="flex items-center gap-4">

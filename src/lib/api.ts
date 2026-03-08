@@ -31,6 +31,46 @@ export async function registerUser(username: string, password: string): Promise<
   }
 }
 
+// Simple hash function to generate consistent results based on file content
+function hashCode(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return Math.abs(hash);
+}
+
+// Generate deterministic result based on file content
+function generateDeterministicResult(file: File): DetectionResult {
+  const isVideo = file.type.startsWith("video");
+  
+  // Use filename, size, and last modified to create a unique hash
+  const fileKey = `${file.name}-${file.size}-${file.lastModified}`;
+  const hash = hashCode(fileKey);
+  
+  // Use hash to determine label (deterministic based on file)
+  const labelRand = hash % 100;
+  const label: "REAL" | "FAKE" | "UNCERTAIN" = 
+    labelRand > 60 ? "FAKE" : labelRand > 20 ? "REAL" : "UNCERTAIN";
+  
+  // Use different part of hash for confidence (60-95%)
+  const confidenceBase = hash % 35;
+  const confidence = 0.60 + (confidenceBase / 100);
+  
+  // Generate deterministic timeline for videos
+  const timeline = isVideo 
+    ? Array.from({ length: 20 }, (_, i) => {
+        // Use hash + index to get deterministic per-frame values
+        const frameHash = (hash + i) % 100;
+        return frameHash / 100;
+      })
+    : undefined;
+
+  return { label, confidence, timeline };
+}
+
 export async function analyzeMedia(file: File, username: string): Promise<DetectionResult> {
   try {
     const formData = new FormData();
@@ -45,19 +85,12 @@ export async function analyzeMedia(file: File, username: string): Promise<Detect
     if (!res.ok) throw new Error("Analysis failed");
     return await res.json();
   } catch {
-    console.warn("Backend not available, using mock analysis");
+    console.warn("Backend not available, using deterministic mock analysis");
     // Simulate processing delay
     await new Promise((r) => setTimeout(r, 2500));
 
-    const isVideo = file.type.startsWith("video");
-    const rand = Math.random();
-    const label = rand > 0.6 ? "FAKE" : rand > 0.2 ? "REAL" : "UNCERTAIN";
-    const confidence = 0.6 + Math.random() * 0.35;
-    const timeline = isVideo
-      ? Array.from({ length: 20 }, () => Math.random())
-      : undefined;
-
-    return { label, confidence, timeline };
+    // Return deterministic result based on file content
+    return generateDeterministicResult(file);
   }
 }
 

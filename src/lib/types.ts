@@ -17,8 +17,6 @@ export interface DetectionResult {
   label: "REAL" | "FAKE" | "UNCERTAIN";
   confidence: number;
   timeline?: number[];
-  mediaUrl?: string;
-  mediaType?: "image" | "video";
 }
 
 export type AppView = "upload" | "result";

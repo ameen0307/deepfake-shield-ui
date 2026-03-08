@@ -1,11 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
-
 @layer base {
   :root {
+    /* Original Dark Theme - Cyan/Teal palette */
     --background: 222 47% 6%;
     --foreground: 210 40% 92%;
 
@@ -36,6 +37,7 @@
 
     --radius: 0.75rem;
 
+    /* Sidebar colors */
     --sidebar-background: 222 47% 7%;
     --sidebar-foreground: 210 40% 85%;
     --sidebar-primary: 173 80% 50%;
@@ -45,7 +47,7 @@
     --sidebar-border: 222 30% 18%;
     --sidebar-ring: 173 80% 50%;
 
-    /* Custom tokens */
+    /* Custom semantic colors */
     --warning: 45 93% 55%;
     --warning-foreground: 222 47% 6%;
     --success: 160 84% 40%;
@@ -56,6 +58,44 @@
     --glow-accent: 160 84% 40%;
     --surface: 222 40% 11%;
   }
+
+  /* Light mode - inverted for light preference */
+  .light {
+    --background: 215 25% 97%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 215 16% 47%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 215 20% 96%;
+    --muted-foreground: 215 16% 45%;
+
+    --accent: 221 83% 53%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 215 16% 90%;
+    --input: 215 16% 90%;
+    --ring: 221 83% 53%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --danger: 0 84% 60%;
+    --danger-foreground: 0 0% 100%;
+  }
 }
 
 @layer base {
@@ -64,7 +104,7 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
     font-family: 'Inter', sans-serif;
   }
 
@@ -74,6 +114,7 @@
 }
 
 @layer utilities {
+  /* Glow effects for cards */
   .glow-primary {
     box-shadow: 0 0 20px hsl(173 80% 50% / 0.15), 0 0 60px hsl(173 80% 50% / 0.05);
   }
@@ -90,16 +131,7 @@
     box-shadow: 0 0 20px hsl(45 93% 55% / 0.2), 0 0 60px hsl(45 93% 55% / 0.08);
   }
 
-  .scan-line {
-    background: linear-gradient(
-      180deg,
-      transparent 0%,
-      hsl(173 80% 50% / 0.03) 50%,
-      transparent 100%
-    );
-    background-size: 100% 4px;
-  }
-
+  /* Glass morphism card */
   .glass-card {
     @apply bg-card border border-border rounded-xl;
     backdrop-filter: blur(12px);
@@ -108,6 +140,17 @@
       hsl(222 47% 9% / 0.9),
       hsl(222 47% 7% / 0.95)
     );
+  }
+
+  /* Scan line animation */
+  .scan-line {
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      hsl(173 80% 50% / 0.03) 50%,
+      transparent 100%
+    );
+    background-size: 100% 4px;
   }
 }
 

@@ -1,10 +1,12 @@
 import { motion } from "framer-motion";
-import { ShieldCheck, ShieldAlert, HelpCircle } from "lucide-react";
+import { ShieldCheck, ShieldAlert, HelpCircle, Activity } from "lucide-react";
 import { DetectionResult } from "@/lib/types";
 import FrameTimeline from "./FrameTimeline";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ResultDisplayProps {
   result: DetectionResult;
+  media?: { url: string; type: "image" | "video" } | null;
 }
 
 const config = {
@@ -37,7 +39,7 @@ const config = {
   },
 };
 
-export default function ResultDisplay({ result }: ResultDisplayProps) {
+export default function ResultDisplay({ result, media }: ResultDisplayProps) {
   const c = config[result.label];
   const Icon = c.icon;
   const pct = Math.round(result.confidence * 100);
@@ -50,22 +52,22 @@ export default function ResultDisplay({ result }: ResultDisplayProps) {
       className="space-y-4"
     >
       {/* Media preview */}
-      {result.mediaUrl && (
+      {media && (
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.1 }}
           className="rounded-xl overflow-hidden border border-border bg-muted/20"
         >
-          {result.mediaType === "video" ? (
+          {media.type === "video" ? (
             <video 
-              src={result.mediaUrl} 
+              src={media.url} 
               controls 
               className="w-full max-h-96 object-contain"
             />
           ) : (
             <img 
-              src={result.mediaUrl} 
+              src={media.url} 
               alt="Analyzed media" 
               className="w-full max-h-96 object-contain"
             />
@@ -113,8 +115,22 @@ export default function ResultDisplay({ result }: ResultDisplayProps) {
 
       {/* Video timeline */}
       {result.timeline && result.timeline.length > 0 && (
-        <FrameTimeline timeline={result.timeline} />
+        <Card className="glass-card">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2 font-mono">
+              <Activity className="w-4 h-4 text-primary" />
+              Frame-Level Analysis
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xs text-muted-foreground mb-4">
+              Fake probability per sampled frame
+            </p>
+            <FrameTimeline timeline={result.timeline} />
+          </CardContent>
+        </Card>
       )}
     </motion.div>
   );
 }
+

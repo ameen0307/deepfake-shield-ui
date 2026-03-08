@@ -1,4 +1,4 @@
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 
 const styles = StyleSheet.create({
   // Page settings
@@ -437,6 +437,95 @@ const styles = StyleSheet.create({
     color: '#4b5563',
     lineHeight: 1.6,
     marginBottom: 20,
+  },
+  
+  // ==================== VIDEO ANALYSIS SECTION ====================
+  videoAnalysisContainer: {
+    marginBottom: 20,
+  },
+  videoFileHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#f9fafb',
+    borderRadius: 4,
+    marginBottom: 10,
+  },
+  videoFileName: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: '#1a1a1a',
+    flex: 1,
+  },
+  videoLabel: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 3,
+  },
+  videoStatsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+    padding: 10,
+    backgroundColor: '#f9fafb',
+    borderRadius: 4,
+  },
+  videoStatBox: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  videoStatValue: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#1a1a1a',
+  },
+  videoStatLabel: {
+    fontSize: 8,
+    color: '#666666',
+    textTransform: 'uppercase',
+    marginTop: 2,
+  },
+  chartContainer: {
+    marginBottom: 25,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#e5e5e5',
+    borderRadius: 4,
+    backgroundColor: '#ffffff',
+  },
+  chartTitle: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#374151',
+    marginBottom: 8,
+  },
+  timelineBar: {
+    height: 20,
+    backgroundColor: '#f3f4f6',
+    borderRadius: 2,
+    overflow: 'hidden',
+    flexDirection: 'row',
+    marginBottom: 8,
+  },
+  timelineSegment: {
+    height: '100%',
+  },
+  timelineAxis: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  timelineAxisLabel: {
+    fontSize: 8,
+    color: '#6b7280',
+  },
+  noVideoMessage: {
+    fontSize: 11,
+    color: '#6b7280',
+    textAlign: 'center',
+    padding: 20,
   },
 });
 

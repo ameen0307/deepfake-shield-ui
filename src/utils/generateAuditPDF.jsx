@@ -27,6 +27,52 @@ const getCurrentDate = () => {
 };
 
 /**
+ * Calculates risk score based on findings
+ * HIGH = 10 points, MEDIUM = 5 points, LOW = 2 points (capped at 100)
+ * @param {Array} findings - Array of findings
+ * @returns {number} Risk score (0-100)
+ */
+const calculateRiskScore = (findings) => {
+  if (!findings || findings.length === 0) return 0;
+  
+  let score = 0;
+  findings.forEach(finding => {
+    if (finding.severity === 'HIGH') score += 10;
+    else if (finding.severity === 'MEDIUM') score += 5;
+    else if (finding.severity === 'LOW') score += 2;
+  });
+  
+  return Math.min(score, 100);
+};
+
+/**
+ * Assigns a category to a finding based on prediction
+ * @param {string} prediction - The prediction label
+ * @returns {string} Category
+ */
+const assignCategory = (prediction) => {
+  if (prediction === 'FAKE') return 'Security';
+  if (prediction === 'UNCERTAIN') return 'Data Integrity';
+  return 'Compliance';
+};
+
+/**
+ * Generates impact description based on severity
+ * @param {string} severity - Finding severity
+ * @param {string} prediction - Prediction label
+ * @returns {string} Impact description
+ */
+const generateImpact = (severity, prediction) => {
+  if (severity === 'HIGH') {
+    return 'This finding indicates potential security risks where manipulated media could be used for fraudulent purposes, identity theft, or spreading disinformation. Immediate action is recommended to prevent potential harm.';
+  } else if (severity === 'MEDIUM') {
+    return 'This finding suggests potential data integrity concerns. The uncertain analysis results may require additional verification to ensure media authenticity and reliability.';
+  } else {
+    return 'This finding confirms the media appears to be authentic. While no immediate action is required, standard verification procedures should continue to be followed.';
+  }
+};
+
+/**
  * Converts deepfake analysis results to audit findings format
  * @param {Array} results - Array of analysis results
  * @returns {Array} Formatted findings array
@@ -64,9 +110,12 @@ const convertResultsToFindings = (results) => {
     return {
       id: `F-${String(index + 1).padStart(3, '0')}`,
       severity,
+      category: assignCategory(prediction),
       title,
       description,
+      impact: generateImpact(severity, prediction),
       recommendation,
+      status: 'Open',
     };
   });
 };
@@ -87,6 +136,12 @@ export const generateAuditPDF = async ({
   const generatedDate = getCurrentDate();
   const reportId = generateReportId();
   const findings = convertResultsToFindings(results);
+  const riskScore = calculateRiskScore(findings);
+
+  // Calculate severity distribution
+  const highCount = findings.filter(f => f.severity === 'HIGH').length;
+  const mediumCount = findings.filter(f => f.severity === 'MEDIUM').length;
+  const lowCount = findings.filter(f => f.severity === 'LOW').length;
 
   const reportData = {
     generatedDate,
@@ -95,6 +150,10 @@ export const generateAuditPDF = async ({
     version,
     findings,
     totalFiles: results.length,
+    riskScore,
+    highCount,
+    mediumCount,
+    lowCount,
   };
 
   // Generate the PDF
